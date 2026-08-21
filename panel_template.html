@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfólio de Projetos — PME</title>
+<style>
+  :root{
+    --bg:#1a2232; --bg2:#212b40; --panel:#273249; --panel2:#2d3a55;
+    --line:#394660; --txt:#eaf0fb; --mut:#a3b2d2; --mut2:#7b8bab;
+    --card:#28344d; --cardline:#3a4864; --chip:#333f5a; --track:#212c42;
+    --sh:0 2px 6px rgba(0,0,0,.22);
+    --andamento:#5b9bf8; --aguardando:#fbbf24; --piloto:#a78bfa;
+    --revisao:#22d3ee; --parado:#fb923c; --congelado:#94a3b8;
+    --concluido:#4ade80; --cancelado:#f87171;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:radial-gradient(1200px 700px at 12% -12%, #26324a 0%, var(--bg) 62%) fixed;
+    color:var(--txt);
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    overflow:hidden; height:100vh; display:flex; flex-direction:column;
+  }
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 28px; border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#212c42,rgba(26,34,50,.35));
+  }
+  .brand{display:flex;align-items:center;gap:14px}
+  .logo{width:58px;height:58px;flex:none;filter:drop-shadow(0 4px 12px rgba(0,0,0,.35))}
+  .logo svg{width:100%;height:100%;display:block}
+  h1{font-size:28px;font-weight:700;letter-spacing:.2px;color:var(--txt)}
+  .sub{font-size:15px;color:var(--mut);margin-top:3px}
+  .clock{text-align:right}
+  .clock .time{font-size:38px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1;color:var(--txt)}
+  .clock .date{font-size:15px;color:var(--mut);margin-top:5px}
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--mut);margin-top:5px}
+  .dot-live{width:9px;height:9px;border-radius:50%;background:var(--concluido);animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(74,222,128,.4)}70%{box-shadow:0 0 0 8px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
+
+  /* KPI strip */
+  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;padding:18px 30px 6px}
+  .kpi{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:16px;padding:16px 18px;position:relative;overflow:hidden;box-shadow:var(--sh)}
+  .kpi .n{font-size:50px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;color:var(--txt)}
+  .kpi .l{font-size:14.5px;color:var(--mut);margin-top:7px;font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+  .kpi .bar{position:absolute;left:0;top:0;bottom:0;width:6px}
+  .kpi .sec{font-size:12.5px;color:var(--mut2);margin-top:4px}
+
+  /* stage / views */
+  main{flex:1;min-height:0;padding:12px 30px 18px;display:flex;flex-direction:column}
+  .viewhead{display:flex;align-items:center;justify-content:space-between;margin:6px 2px 12px}
+  .viewtitle{font-size:19px;font-weight:700;color:var(--txt);display:flex;align-items:center;gap:10px}
+  .viewtitle .ic{font-size:22px}
+  .rot{display:flex;gap:8px;align-items:center}
+  .rot .rdot{width:10px;height:10px;border-radius:50%;background:#41506e;cursor:pointer;transition:.3s}
+  .rot .rdot.on{background:var(--andamento);width:28px;border-radius:6px}
+  .view{flex:1;min-height:0;display:none}
+  .view.on{display:flex;flex-direction:column;min-height:0}
+
+  /* Kanban */
+  .board{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;flex:1;min-height:0}
+  .col{background:#222d44;border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+  .colhead{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border-bottom:1px solid var(--line)}
+  .colhead .cn{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--txt)}
+  .colhead .cd{width:11px;height:11px;border-radius:50%}
+  .colhead .cc{font-size:14px;font-weight:800;background:#2f3c58;border:1px solid var(--cardline);padding:2px 10px;border-radius:20px;color:var(--txt)}
+  .collist{overflow:hidden;flex:1;padding:8px;min-height:0}
+  .collist .inner{display:flex;flex-direction:column;gap:8px}
+  .card{background:var(--card);border:1px solid var(--cardline);border-left-width:5px;border-radius:11px;padding:11px 12px;box-shadow:var(--sh)}
+  .card .ct{font-size:15.5px;font-weight:700;line-height:1.25;margin-bottom:8px;color:var(--txt)}
+  .card .meta{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+  .tag{font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:var(--chip);color:var(--mut);letter-spacing:.2px}
+  .card .who{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--mut);margin-bottom:7px}
+  .av{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff}
+  .card .nx{font-size:13px;color:#c3d0ee;line-height:1.35;border-top:1px dashed #3a4864;padding-top:7px}
+  .card .nx b{color:var(--mut);font-weight:700}
+
+  /* Área view */
+  .areas{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;flex:1;min-height:0;overflow:hidden;align-content:start}
+  .acard{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:14px;padding:15px 18px;display:flex;flex-direction:column;gap:11px;box-shadow:var(--sh)}
+  .acard .ah{display:flex;align-items:center;justify-content:space-between}
+  .acard .an{font-size:19px;font-weight:800}
+  .acard .atot{font-size:33px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--txt)}
+  .acard .stack{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--track)}
+  .acard .stack span{height:100%}
+  .acard .leg{display:flex;flex-wrap:wrap;gap:7px 14px}
+  .acard .leg .li{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mut)}
+  .acard .leg .li i{width:9px;height:9px;border-radius:2px;display:inline-block}
+  .acard .leg .li b{color:var(--txt);font-weight:700}
+
+  /* Resumo executivo */
+  .exec{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;flex:1;min-height:0}
+  .execbox{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:14px;padding:15px 18px;display:flex;flex-direction:column;min-height:0;box-shadow:var(--sh)}
+  .execbox h3{font-size:15.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--mut);margin-bottom:11px;display:flex;align-items:center;gap:8px}
+  .attlist{overflow:hidden;flex:1}
+  .attlist .inner{display:flex;flex-direction:column;gap:9px}
+  .att{display:flex;gap:12px;align-items:flex-start;background:#232f47;border:1px solid var(--cardline);border-radius:10px;padding:10px 12px}
+  .att .pill{flex:none;font-size:11px;font-weight:800;padding:4px 9px;border-radius:6px;text-transform:uppercase;letter-spacing:.3px;margin-top:1px}
+  .att .body .t{font-size:15.5px;font-weight:700;line-height:1.2;color:var(--txt)}
+  .att .body .n{font-size:13px;color:#c3d0ee;margin-top:4px;line-height:1.3}
+  .att .body .r{font-size:12.5px;color:var(--mut);margin-top:4px}
+  .bigrow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+  .bigrow .b{background:#232f47;border:1px solid var(--cardline);border-radius:12px;padding:13px 15px;position:relative;overflow:hidden}
+  .bigrow .b .n{font-size:42px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--txt)}
+  .bigrow .b .l{font-size:13.5px;color:var(--mut);margin-top:4px;font-weight:600}
+  .bigrow .b .bar{position:absolute;left:0;top:0;bottom:0;width:6px}
+  .distrow{display:flex;flex-direction:column;gap:11px;margin-top:2px}
+  .distrow .d{display:grid;grid-template-columns:185px 1fr 40px;align-items:center;gap:12px}
+  .distrow .d .dl{font-size:14px;color:var(--mut);font-weight:600}
+  .distrow .d .dt{height:16px;border-radius:7px;background:var(--track);overflow:hidden}
+  .distrow .d .dt i{display:block;height:100%;border-radius:7px}
+  .distrow .d .dv{font-size:15.5px;font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+  footer{padding:7px 30px 10px;color:var(--mut2);font-size:13px;display:flex;justify-content:space-between}
+  .scrollmask{position:relative}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="hbg" cx="42%" cy="35%" r="75%"><stop offset="0%" stop-color="#2a3a58"/><stop offset="100%" stop-color="#161f30"/></radialGradient>
+          <radialGradient id="hhub" cx="40%" cy="35%" r="70%"><stop offset="0%" stop-color="#ffd83f"/><stop offset="100%" stop-color="#f4a300"/></radialGradient>
+        </defs>
+        <circle cx="50" cy="50" r="49" fill="url(#hbg)" stroke="#3a4a68" stroke-width="1.5"/>
+        <g fill="none" stroke="#8ea3c8" stroke-opacity="0.45" stroke-width="1.6">
+          <ellipse cx="50" cy="50" rx="40" ry="15.5"/>
+          <ellipse cx="50" cy="50" rx="40" ry="15.5" transform="rotate(60 50 50)"/>
+          <ellipse cx="50" cy="50" rx="40" ry="15.5" transform="rotate(120 50 50)"/>
+        </g>
+        <circle cx="50" cy="16" r="5.4" fill="#3b82f6"/><circle cx="82" cy="40" r="5.4" fill="#14b8a6"/>
+        <circle cx="70" cy="77" r="5.4" fill="#ef4444"/><circle cx="30" cy="77" r="5.4" fill="#cbd5e1"/>
+        <circle cx="18" cy="40" r="5.4" fill="#94a3b8"/>
+        <circle cx="50" cy="50" r="11.5" fill="url(#hhub)"/>
+        <g stroke="#5a3d00" stroke-width="1.8" stroke-linecap="round">
+          <line x1="50" y1="45" x2="50" y2="55"/><line x1="44.5" y1="52.5" x2="55.5" y2="52.5"/>
+          <line x1="44.5" y1="52.5" x2="44.5" y2="55.5"/><line x1="55.5" y1="52.5" x2="55.5" y2="55.5"/>
+        </g>
+        <circle cx="50" cy="45" r="1.7" fill="#5a3d00"/>
+      </svg>
+    </div>
+    <div>
+      <h1>Portfólio de Projetos — PME</h1>
+      <div class="sub">Setor de Sincronismo Organizacional · base Notion “Projetos PME”</div>
+    </div>
+  </div>
+  <div class="clock">
+    <div class="time" id="clk">--:--</div>
+    <div class="date" id="dt">—</div>
+    <div class="live"><span class="dot-live"></span> Snapshot: <span id="snap"></span></div>
+  </div>
+</header>
+
+<div class="kpis" id="kpis"></div>
+
+<main>
+  <div class="viewhead">
+    <div class="viewtitle"><span class="ic" id="vic">▦</span><span id="vtitle">Kanban por Status</span></div>
+    <div class="rot" id="rot"></div>
+  </div>
+
+  <section class="view on" id="v0"><div class="board" id="board"></div></section>
+  <section class="view" id="v1"><div class="areas" id="areasgrid"></div></section>
+  <section class="view" id="v2">
+    <div class="exec">
+      <div class="execbox">
+        <h3>⚠ Precisa de atenção — Aguardando validação, Parados & Congelados</h3>
+        <div class="attlist scrollmask"><div class="inner" id="attinner"></div></div>
+      </div>
+      <div class="execbox">
+        <h3>📊 Resumo geral</h3>
+        <div class="bigrow" id="bigrow"></div>
+        <h3 style="margin-top:4px">Distribuição por status</h3>
+        <div class="distrow" id="distrow"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>PME Máquinas · Setor de Sincronismo Organizacional</span>
+  <span id="total">—</span>
+</footer>
+
+<script>
+/* ==== DADOS (snapshot da base Notion) ==== */
+const SNAPSHOT = "__SNAPSHOT__";
+const RAW = __RAW__;
+
+const STATUS = {
+  "Em andamento":{c:"#5b9bf8"},
+  "Aguardando validação":{c:"#fbbf24"},
+  "Fase piloto":{c:"#a78bfa"},
+  "Implantado — revisão necessária":{c:"#22d3ee",short:"Implantado (revisão)"},
+  "Parado":{c:"#fb923c"},
+  "Congelado":{c:"#94a3b8"},
+  "Concluído":{c:"#4ade80"},
+  "Cancelado":{c:"#f87171"}
+};
+const KANBAN_ORDER = ["Em andamento","Aguardando validação","Fase piloto","Implantado — revisão necessária","Parado","Congelado"];
+const AREA_COLORS = {"Financeiro":"#5b9bf8","Comercial":"#4ade80","TI / Automação":"#a78bfa","Operações":"#22d3ee","Fiscal":"#fbbf24","RH":"#f472b6","Novos negócios":"#2dd4bf","Logística":"#fb923c","Compliance":"#c084fc"};
+const ATT = ["Aguardando validação","Parado","Congelado"];
+const ATT_LABEL = {"Aguardando validação":"Validar","Parado":"Parado","Congelado":"Congelado"};
+
+const $=s=>document.querySelector(s);
+const count=s=>RAW.filter(p=>p.s===s).length;
+const initials=n=>n.split(" ").filter(Boolean).slice(0,2).map(w=>w[0]).join("").toUpperCase();
+const avColor=n=>{let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))%360;return `hsl(${h} 55% 58%)`;};
+const esc=s=>s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+
+/* KPIs */
+function renderKPIs(){
+  const total=RAW.length;
+  const atencao=count("Parado")+count("Congelado");
+  const tiles=[
+    {n:total,l:"Projetos totais",c:"#94a3b8",sec:"inclui piloto (1) e cancelados (3)"},
+    {n:count("Em andamento"),l:"Em andamento",c:STATUS["Em andamento"].c},
+    {n:count("Aguardando validação"),l:"Aguardando validação",c:STATUS["Aguardando validação"].c},
+    {n:atencao,l:"Parados / Congelados",c:STATUS["Parado"].c,sec:count("Parado")+" parados · "+count("Congelado")+" congelados"},
+    {n:count("Implantado — revisão necessária"),l:"Implantado · revisão",c:STATUS["Implantado — revisão necessária"].c},
+    {n:count("Concluído"),l:"Concluídos",c:STATUS["Concluído"].c}
+  ];
+  $("#kpis").innerHTML=tiles.map(t=>`<div class="kpi"><span class="bar" style="background:${t.c}"></span><div class="n">${t.n}</div><div class="l">${t.l}</div>${t.sec?`<div class="sec">${t.sec}</div>`:""}</div>`).join("");
+}
+
+/* Kanban */
+function renderBoard(){
+  $("#board").innerHTML=KANBAN_ORDER.map(st=>{
+    const col=RAW.filter(p=>p.s===st);
+    const c=STATUS[st].c, label=STATUS[st].short||st;
+    const cards=col.map(p=>`
+      <div class="card" style="border-left-color:${c}">
+        <div class="ct">${esc(p.n)}</div>
+        <div class="meta">${p.a.map(a=>`<span class="tag" style="color:${AREA_COLORS[a]||'#a3b2d2'}">${esc(a)}</span>`).join("")}<span class="tag">${p.ano}</span></div>
+        <div class="who"><span class="av" style="background:${avColor(p.r)}">${initials(p.r)}</span>${esc(p.r)}</div>
+        ${p.nx&&p.nx!=="—"?`<div class="nx"><b>Próximo:</b> ${esc(p.nx)}</div>`:""}
+      </div>`).join("");
+    return `<div class="col">
+      <div class="colhead" style="background:linear-gradient(180deg,${c}1f,transparent)">
+        <div class="cn"><span class="cd" style="background:${c}"></span>${esc(label)}</div>
+        <div class="cc">${col.length}</div>
+      </div>
+      <div class="collist"><div class="inner">${cards||'<div class="nx" style="color:#7b8bab;padding:6px">—</div>'}</div></div>
+    </div>`;
+  }).join("");
+  setupAutoScroll();
+}
+
+/* Áreas */
+function renderAreas(){
+  const areas={};
+  RAW.forEach(p=>p.a.forEach(a=>{(areas[a]=areas[a]||[]).push(p);}));
+  const order=Object.keys(areas).sort((x,y)=>areas[y].length-areas[x].length);
+  $("#areasgrid").innerHTML=order.map(a=>{
+    const list=areas[a], tot=list.length;
+    const byS={};list.forEach(p=>byS[p.s]=(byS[p.s]||0)+1);
+    const segs=Object.keys(STATUS).filter(s=>byS[s]>0).map(s=>`<span style="background:${STATUS[s].c};width:${byS[s]/tot*100}%" title="${s}: ${byS[s]}"></span>`).join("");
+    const leg=Object.keys(STATUS).filter(s=>byS[s]>0).map(s=>`<span class="li"><i style="background:${STATUS[s].c}"></i>${STATUS[s].short||s} <b>${byS[s]}</b></span>`).join("");
+    return `<div class="acard">
+      <div class="ah"><div class="an" style="color:${AREA_COLORS[a]||'#eaf0fb'}">${esc(a)}</div><div class="atot">${tot}</div></div>
+      <div class="stack">${segs}</div>
+      <div class="leg">${leg}</div>
+    </div>`;
+  }).join("");
+}
+
+/* Resumo executivo */
+function renderExec(){
+  const att=RAW.filter(p=>ATT.includes(p.s)).sort((a,b)=>ATT.indexOf(a.s)-ATT.indexOf(b.s));
+  $("#attinner").innerHTML=att.map(p=>{
+    const c=STATUS[p.s].c;
+    return `<div class="att">
+      <span class="pill" style="background:${c}22;color:${c};border:1px solid ${c}66">${ATT_LABEL[p.s]}</span>
+      <div class="body"><div class="t">${esc(p.n)}</div>
+      ${p.nx&&p.nx!=="—"?`<div class="n">${esc(p.nx)}</div>`:""}
+      <div class="r">${esc(p.r)} · ${p.a.join(" / ")}</div></div>
+    </div>`;
+  }).join("");
+
+  const ativos=count("Em andamento")+count("Fase piloto");
+  const revisao=count("Implantado — revisão necessária");
+  const big=[
+    {n:ativos,l:"Ativos (andamento + piloto)",c:STATUS["Em andamento"].c},
+    {n:count("Aguardando validação"),l:"Aguardando decisão",c:STATUS["Aguardando validação"].c},
+    {n:count("Parado")+count("Congelado"),l:"Estagnados (parados + congelados)",c:STATUS["Parado"].c},
+    {n:revisao,l:"Entregues p/ revisão",c:STATUS["Implantado — revisão necessária"].c}
+  ];
+  $("#bigrow").innerHTML=big.map(b=>`<div class="b"><span class="bar" style="background:${b.c}"></span><div class="n">${b.n}</div><div class="l">${b.l}</div></div>`).join("");
+
+  const max=Math.max(...Object.keys(STATUS).map(count));
+  $("#distrow").innerHTML=Object.keys(STATUS).map(s=>{
+    const v=count(s),c=STATUS[s].c;
+    return `<div class="d"><div class="dl">${STATUS[s].short||s}</div><div class="dt"><i style="width:${v/max*100}%;background:${c}"></i></div><div class="dv" style="color:${c}">${v}</div></div>`;
+  }).join("");
+}
+
+/* Auto-scroll das colunas longas */
+let scrollTimers=[];
+function setupAutoScroll(){
+  scrollTimers.forEach(t=>clearInterval(t));scrollTimers=[];
+  document.querySelectorAll(".collist, .attlist").forEach(el=>{
+    const inner=el.firstElementChild;
+    if(inner.scrollHeight-el.clientHeight<20)return;
+    let dir=1,pos=0;
+    const t=setInterval(()=>{
+      const maxS=inner.scrollHeight-el.clientHeight;
+      pos+=dir*0.5;
+      if(pos>=maxS){pos=maxS;dir=-1;}else if(pos<=0){pos=0;dir=1;}
+      el.scrollTop=pos;
+    },40);
+    scrollTimers.push(t);
+  });
+}
+
+/* Rotação de views */
+const VIEWS=[
+  {t:"Kanban por Status",ic:"▦"},
+  {t:"Visão por Área",ic:"◫"},
+  {t:"Resumo Executivo",ic:"◎"}
+];
+let cur=0,paused=false;
+function showView(i){
+  cur=(i+VIEWS.length)%VIEWS.length;
+  document.querySelectorAll(".view").forEach((v,k)=>v.classList.toggle("on",k===cur));
+  $("#vtitle").textContent=VIEWS[cur].t;$("#vic").textContent=VIEWS[cur].ic;
+  document.querySelectorAll(".rot .rdot").forEach((d,k)=>d.classList.toggle("on",k===cur));
+  setupAutoScroll();
+}
+function buildRot(){
+  $("#rot").innerHTML=VIEWS.map((_,i)=>`<span class="rdot ${i===0?'on':''}" data-i="${i}"></span>`).join("");
+  document.querySelectorAll(".rot .rdot").forEach(d=>d.onclick=()=>{showView(+d.dataset.i);resetTimer();});
+}
+let rotTimer;
+function resetTimer(){clearInterval(rotTimer);rotTimer=setInterval(()=>{if(!paused)showView(cur+1);},22000);}
+document.body.onmouseenter=()=>paused=true;
+document.body.onmouseleave=()=>paused=false;
+
+/* Relógio */
+function tick(){
+  const d=new Date();
+  $("#clk").textContent=d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  $("#dt").textContent=d.toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"});
+}
+
+/* Init */
+$("#snap").textContent=SNAPSHOT;
+$("#total").textContent=RAW.length+" projetos monitorados";
+renderKPIs();renderBoard();renderAreas();renderExec();buildRot();
+tick();setInterval(tick,1000);resetTimer();
+
+/* Recarrega a página a cada 30 min para puxar a versão atualizada do painel */
+setTimeout(()=>location.reload(),30*60*1000);
+</script>
+</body>
+</html>
